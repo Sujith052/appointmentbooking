@@ -1,0 +1,109 @@
+{% include "header.html" %}
+{% load static %}
+<!-- Appointment Section -->
+<section id="" class="appointment section">
+
+    <!-- Section Title -->
+    <div class="container section-title" data-aos="fade-up">
+      <h2>Appointment</h2>
+      <p>Book your slote, Make an appointment. Forenoon and Afternoon slots available.</p>
+        <p><b>Lunch Break Time: 01:00 pm to 02:00 pm</b> / <b style="color:green">Closing Time: 05:00pm</b></p>
+    </div><!-- End Section Title -->
+
+    <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+      <form action="{% url 'appointment_action' %}" method="POST" role="form" class="php-email-form">
+        {% csrf_token %}
+        <div class="row">
+          <div class="col-md-4 form-group">
+            <label>Name</label>
+            <input type="text" name="name" class="form-control" id="name" placeholder="Your Name" required="">
+          </div>
+          <div class="col-md-4 form-group mt-3 mt-md-0">
+            <label>Contact Number</label>
+            <input type="number" class="form-control" name="contactno" id="contactno" placeholder="Your Contact No" required="">
+          </div>
+          <div class="col-md-4 form-group mt-3 mt-md-0">
+            <label>Appointment Date</label>
+            <input type="date" class="form-control" name="date" id="date" placeholder="Your Email" required="">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4 form-group mt-3">
+            <select name="appointment" id="appointment" class="form-select" required="">
+              <option value="">Select Your Time</option>
+              {%for data in appointment_time%}
+                <option value="{{data.id}}">{{data.appointment_time}}</option>
+              {%endfor%}
+              
+            </select>
+          </div>
+          <div class="col-md-4 form-group mt-3">
+            <select name="appointment_time" id="appointment_time" class="form-select" required="">
+              <option value="">Select Time Slot</option>
+             
+            </select>
+          </div>
+        </div>
+        <button type="submit" onclick="return confirmUpdate();">Make an Appointment</button>
+        
+      </form>
+      
+    </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function ()
+    {
+            $.ajaxSetup({
+                headers: {
+                    "X-CSRFToken": '{{ csrf_token }}'
+                }
+            });
+
+        $('#appointment').change(function(){
+        var appointmentid = $(this).val();
+          if (appointmentid) {
+            $.ajax({
+            url: '{% url 'gettimeslot' %}',
+            type: 'post',
+            data: {appointmentid:appointmentid },
+            dataType : "json",
+            success: function (data) {
+
+               // Clear the location dropdown and add the default option
+               $('#appointment_time').empty().append($('<option>', {
+                value: '',
+                text: '---Select Time Slot---'
+            }));
+
+            // Populate location dropdown with data from the AJAX response
+            $.each(data, function (key, value) {
+                $('#appointment_time').append($('<option>', {
+                    value: value.id,
+                    text: value.timeslote
+                }));
+            });
+
+        }
+    });
+} else {
+    // Clear location dropdown if no district is selected
+    $('#location').empty().append($('<option>', {
+        value: '',
+        text: '---Select Location---'
+    }));
+}
+});
+});
+</script>
+
+<!-- scripts section -->
+<script type="text/javascript">
+    function confirmUpdate() {
+        return confirm("Appointment Booking Confirmation");
+    }
+</script>
+
+  </section><!-- /Appointment Section -->
+  {% include "footer.html" %}
