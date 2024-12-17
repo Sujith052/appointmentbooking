@@ -102,7 +102,8 @@ def appointment_action(request):
             return render(request, "appointment.html", {'error_message': 'An error occurred while register User. Please try again.'})
 
 def booking_details(request):
-    bookings=appointmentbooking.objects.select_related("selected_slote")
+    loginid=request.session['loginid']
+    bookings=appointmentbooking.objects.select_related("selected_slote").filter(user=loginid)
     return render(request,"booking_details.html",{"booked_slots":bookings})
 
 def user_logout(request):
